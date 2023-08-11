@@ -1,6 +1,6 @@
 package model;
 
-public class PhysicalCard {
+public class PhysicalCardDTO {
     private final CardDTO cardInformation;
     private final String location;
     private final CardCondition condition;
@@ -17,7 +17,7 @@ public class PhysicalCard {
         return condition;
     }
 
-    private PhysicalCard(PhysicalCardBuilder builder) {
+    private PhysicalCardDTO(PhysicalCardBuilder builder) {
         this.cardInformation = builder.cardInformation;
         this.location = builder.location;
         this.condition = builder.condition;
@@ -43,8 +43,8 @@ public class PhysicalCard {
             return this;
         }
 
-        public PhysicalCard build() {
-            return new PhysicalCard(this);
+        public PhysicalCardDTO build() {
+            return new PhysicalCardDTO(this);
         }
     }
 }

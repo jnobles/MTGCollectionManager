@@ -1,7 +1,5 @@
 package model;
 
-import java.util.Arrays;
-
 public class CardDTO {
     private final String colorIdentity;
     private final String colors;
@@ -95,7 +93,7 @@ public class CardDTO {
     public String toString() {
         return "CardDTO{" +
                 "name='" + name + '\'' +
-                ", type=" + type + '\'' +
+                ", type='" + type + '\'' +
                 ", setCode='" + setCode + '\'' +
                 ", number='" + number + '\'' +
                 '}';

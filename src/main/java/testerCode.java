@@ -1,13 +1,24 @@
+import dao.JDBCInventoryDAO;
 import dao.JDBCCardDAO;
+import model.CardCondition;
 import model.CardDTO;
-
-import java.util.List;
+import model.PhysicalCardDTO;
 
 public class testerCode {
     public static void main(String[] args) {
-        JDBCCardDAO CardDatabaseDAO = new JDBCCardDAO("jdbc:sqlite:X:\\Downloads\\AllPrintings.sqlite");
-        CardDTO cardDTO = CardDatabaseDAO.getCardBySetAndNumber("NPH", 6);
+        //String cardDbURL = "X:\\Downloads\\AllPrintings.sqlite";
+        String cardDbURL = "C:\\Users\\m313436\\Downloads\\AllPrintings.sqlite";
+        JDBCCardDAO cardDatabase = new JDBCCardDAO(cardDbURL);
+        CardDTO cardDTO = cardDatabase.getCardBySetAndNumber("NPH", 6);
         System.out.println(cardDTO);
-        System.out.println("Done");
+
+        String inventoryDbURL = "C:\\Users\\m313436\\Downloads\\Test_db.sqlite";
+        JDBCInventoryDAO inventory = new JDBCInventoryDAO(inventoryDbURL);
+        PhysicalCardDTO physicalCardDTO = new PhysicalCardDTO.PhysicalCardBuilder()
+                .withCardInformation(cardDTO)
+                .withCondition(CardCondition.MODERATELY_PLAYED)
+                .withLocation("Binder")
+                .build();
+        inventory.writeCardToDatabase(physicalCardDTO);
     }
 }

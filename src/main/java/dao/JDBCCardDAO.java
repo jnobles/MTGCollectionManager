@@ -6,11 +6,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JDBCCardDAO implements CardDAO {
+public class JDBCCardDAO implements CardDAO<CardDTO> {
     private final String dbURL;
 
-    public JDBCCardDAO(String dbURL) {
-        this.dbURL = dbURL;
+    public JDBCCardDAO(String databasePath) {
+        this.dbURL = "jdbc:sqlite:" + databasePath;
     }
 
     @Override
@@ -35,14 +35,10 @@ public class JDBCCardDAO implements CardDAO {
     }
 
     private List<CardDTO> runQuery(String query, String ... parameters) {
-        if (dbURL == null) {
-            throw new RuntimeException("Database URL not set");
-        }
-
         List<CardDTO> cardsDTOs = new ArrayList<>();
 
         try (Connection conn = DriverManager.getConnection(dbURL);
-             PreparedStatement statement = conn.prepareStatement(query);) {
+             PreparedStatement statement = conn.prepareStatement(query)) {
             for (int i = 0; i < parameters.length; i++) {
                 statement.setString(i + 1, parameters[i]);
             }
