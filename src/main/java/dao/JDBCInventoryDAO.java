@@ -1,10 +1,9 @@
 package dao;
 
+import model.CardDTO;
 import model.PhysicalCardDTO;
 import org.sqlite.SQLiteConfig;
-import org.sqlite.SQLiteConnection;
 
-import javax.swing.plaf.nimbus.State;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,7 +48,11 @@ public class JDBCInventoryDAO implements CardDAO<PhysicalCardDTO> {
         }
     }
 
-    public void writeCardToDatabase(PhysicalCardDTO physicalCardDTO) {
+    public void writePhysicalCardToDatabase(PhysicalCardDTO physicalCardDTO) {
+        writePhysicalCardToDatabase(physicalCardDTO, false);
+    }
+
+    private void writePhysicalCardToDatabase(PhysicalCardDTO physicalCardDTO, Boolean isRecursiveCall) {
         String sqlQuery = "INSERT INTO physical_cards (condition, location, setCode, number) VALUES (?, ?, ?, ?)";
         try {
             executePreparedStatement(sqlQuery,
@@ -58,8 +61,40 @@ public class JDBCInventoryDAO implements CardDAO<PhysicalCardDTO> {
                     physicalCardDTO.getCardInformation().getSetCode(),
                     physicalCardDTO.getCardInformation().getNumber());
         }catch (SQLException e) {
-            //Todo: Need to find a way to catch ForeignKey failure
-            e.printStackTrace();
+            if (e.getErrorCode() == SQLiteErrorCodes.CONSTRAINT.getCode()) {
+                if (isRecursiveCall) {
+                    throw new RuntimeException("Issue when creating item for use as foreign key.");
+                } else {
+                    writeCardToDatabase(physicalCardDTO.getCardInformation());
+                    writePhysicalCardToDatabase(physicalCardDTO, true);
+                }
+            } else {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void writeCardToDatabase(CardDTO cardDTO) {
+        String sqlQuery = "INSERT INTO card_information (colorIdentity, colors, manaCost, manaValue, name, number, power, subtypes, supertypes, text, toughness, type, types, setCode)" +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try {
+            executePreparedStatement(sqlQuery,
+                    cardDTO.getColorIdentity(),
+                    cardDTO.getColors(),
+                    cardDTO.getManaCost(),
+                    cardDTO.getManaValue(),
+                    cardDTO.getName(),
+                    cardDTO.getNumber(),
+                    cardDTO.getPower(),
+                    cardDTO.getSubtypes(),
+                    cardDTO.getSupertypes(),
+                    cardDTO.getText(),
+                    cardDTO.getToughness(),
+                    cardDTO.getType(),
+                    cardDTO.getTypes(),
+                    cardDTO.getSetCode());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -69,6 +104,10 @@ public class JDBCInventoryDAO implements CardDAO<PhysicalCardDTO> {
         try (Connection connection = DriverManager.getConnection(dbURL, sqLiteConfig.toProperties());
              PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
             for (int i = 0; i < parameters.length; i++) {
+                if (parameters[i] instanceof String[]) { // convert String[] to a comma separated String for storage
+                    parameters[i] = String.join(",", (String[]) parameters[i]);
+                }
+
                 statement.setObject(i + 1, parameters[i]);
             }
             statement.executeUpdate();

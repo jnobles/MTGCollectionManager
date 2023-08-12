@@ -4,7 +4,7 @@ public class CardDTO {
     private final String colorIdentity;
     private final String colors;
     private final String manaCost;
-    private final float manaValue;
+    private final Float manaValue;
     private final String name;
     private final String number;
     private final String power;
@@ -103,7 +103,7 @@ public class CardDTO {
         private String colorIdentity;
         private String colors;
         private String manaCost;
-        private float manaValue;
+        private Float manaValue;
         private String name;
         private String number;
         private String power;
@@ -130,7 +130,7 @@ public class CardDTO {
             return this;
         }
 
-        public CardDTOBuilder withManaValue(float manaValue) {
+        public CardDTOBuilder withManaValue(Float manaValue) {
             this.manaValue = manaValue;
             return this;
         }
