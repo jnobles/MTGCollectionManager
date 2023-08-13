@@ -1,4 +1,4 @@
-CREATE TABLE card_information (
+CREATE TABLE cards (
 	colorIdentity TEXT,
 	colors TEXT,
 	manaCost TEXT,
@@ -22,5 +22,5 @@ CREATE TABLE physical_cards (
 	setCode TEXT,
 	number TEXT,
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	FOREIGN KEY (setCode, number) REFERENCES card_information(setCode, number)
+	FOREIGN KEY (setCode, number) REFERENCES cards(setCode, number)
 );

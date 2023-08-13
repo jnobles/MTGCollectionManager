@@ -5,5 +5,6 @@ public enum CardCondition {
     LIGHTLY_PLAYED,
     MODERATELY_PLAYED,
     HEAVILY_PLAYED,
-    DAMAGED
+    DAMAGED,
+    NOT_SET
 }

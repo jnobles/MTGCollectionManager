@@ -1,5 +1,6 @@
 package dao;
 
+import model.CardCondition;
 import model.CardDTO;
 import model.PhysicalCardDTO;
 import org.sqlite.SQLiteConfig;
@@ -9,16 +10,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class JDBCInventoryDAO implements CardDAO<PhysicalCardDTO> {
     private final String dbURL;
 
     public JDBCInventoryDAO(String databasePath) {
-        this.dbURL = "jdbc:sqlite:" + databasePath;
-        if (!(new File(databasePath).exists())) {
-            initializeDatabase(databasePath);
+        if (databasePath.startsWith("jdbc:sqlite:")) {
+            if (!(new File(databasePath).exists())) {
+                initializeDatabase(databasePath);
+            }
+        } else {
+            if (!(new File(databasePath).exists())) {
+                initializeDatabase(databasePath);
+            }
+            databasePath = "jdbc:sqlite:" + databasePath;
         }
+        this.dbURL = databasePath;
+
+
     }
 
     private void initializeDatabase(String databasePath) {
@@ -30,7 +41,7 @@ public class JDBCInventoryDAO implements CardDAO<PhysicalCardDTO> {
             return;
         }
 
-        try (Connection connection = DriverManager.getConnection(dbURL);
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + databasePath);
              Statement statement = connection.createStatement()) {
             ClassLoader classLoader = getClass().getClassLoader();
             try (InputStream inputStream = classLoader.getResourceAsStream("initializeInventory.sql")) {
@@ -75,7 +86,7 @@ public class JDBCInventoryDAO implements CardDAO<PhysicalCardDTO> {
     }
 
     private void writeCardToDatabase(CardDTO cardDTO) {
-        String sqlQuery = "INSERT INTO card_information (colorIdentity, colors, manaCost, manaValue, name, number, power, subtypes, supertypes, text, toughness, type, types, setCode)" +
+        String sqlQuery = "INSERT INTO cards (colorIdentity, colors, manaCost, manaValue, name, number, power, subtypes, supertypes, text, toughness, type, types, setCode)" +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             executePreparedStatement(sqlQuery,
@@ -107,7 +118,6 @@ public class JDBCInventoryDAO implements CardDAO<PhysicalCardDTO> {
                 if (parameters[i] instanceof String[]) { // convert String[] to a comma separated String for storage
                     parameters[i] = String.join(",", (String[]) parameters[i]);
                 }
-
                 statement.setObject(i + 1, parameters[i]);
             }
             statement.executeUpdate();
@@ -116,7 +126,33 @@ public class JDBCInventoryDAO implements CardDAO<PhysicalCardDTO> {
 
     @Override
     public List<PhysicalCardDTO> getAllCards() {
-        return null;
+        String query = "SELECT * FROM physical_cards";
+
+        List<PhysicalCardDTO> physicalCardDTOs = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(dbURL);
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery();) {
+            while (resultSet.next()) {
+                physicalCardDTOs.add(extractPhysicalCardDTOFromResultSet(resultSet));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return physicalCardDTOs;
     }
+
+    private PhysicalCardDTO extractPhysicalCardDTOFromResultSet(ResultSet resultSet) throws SQLException {
+        String set = resultSet.getString("setCode");
+        String number = resultSet.getString("number");
+        String location = resultSet.getString("location");
+        CardCondition condition = CardCondition.valueOf(resultSet.getString("condition"));
+
+        JDBCCardDAO cardInformationLookup = new JDBCCardDAO(dbURL);
+        CardDTO cardInformation = cardInformationLookup.getCardBySetAndNumber(set, number);
+
+        return new PhysicalCardDTO(cardInformation, location, condition);
+    }
+
 
 }

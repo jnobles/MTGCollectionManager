@@ -2,11 +2,21 @@ package model;
 
 public class PhysicalCardDTO {
     private final CardDTO cardInformation;
-    private final String location;
-    private final CardCondition condition;
+    private final String setCode;
+    private final String number;
+    private String location;
+    private CardCondition condition;
 
     public CardDTO getCardInformation() {
         return cardInformation;
+    }
+
+    public String getSetCode() {
+        return setCode;
+    }
+
+    public String getNumber() {
+        return number;
     }
 
     public String getLocation() {
@@ -17,34 +27,44 @@ public class PhysicalCardDTO {
         return condition;
     }
 
-    private PhysicalCardDTO(PhysicalCardBuilder builder) {
-        this.cardInformation = builder.cardInformation;
-        this.location = builder.location;
-        this.condition = builder.condition;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
-    public static class PhysicalCardBuilder {
-        private CardDTO cardInformation;
-        private String location;
-        private CardCondition condition;
+    public void setCondition(CardCondition condition) {
+        this.condition = condition;
+    }
 
-        public PhysicalCardBuilder withCardInformation(CardDTO cardInformation) {
-            this.cardInformation = cardInformation;
-            return this;
-        }
+    public PhysicalCardDTO(CardDTO cardInformation) {
+        this(cardInformation, "", CardCondition.NOT_SET);
+    }
 
-        public PhysicalCardBuilder withLocation(String location) {
-            this.location = location;
-            return this;
-        }
+    public PhysicalCardDTO(CardDTO cardInformation, String location) {
+        this(cardInformation, location, CardCondition.NOT_SET);
+    }
 
-        public PhysicalCardBuilder withCondition(CardCondition condition) {
-            this.condition = condition;
-            return this;
-        }
+    public PhysicalCardDTO(CardDTO cardInformation, CardCondition condition) {
+        this(cardInformation, "", condition);
+    }
 
-        public PhysicalCardDTO build() {
-            return new PhysicalCardDTO(this);
-        }
+    public PhysicalCardDTO(CardDTO cardInformation, String location, CardCondition condition) {
+        this.cardInformation = cardInformation;
+        this.setCode = cardInformation.getSetCode();
+        this.number = cardInformation.getNumber();
+        this.location = location;
+        this.condition = condition;
+    }
+
+    @Override
+    public String toString() {
+        return "PhysicalCardDTO{" +
+                "name=" + cardInformation.getName() +
+                ", setCode='" + setCode + '\'' +
+                ", number='" + number + '\'' +
+                ", location='" + location + '\'' +
+                ", condition=" + condition +
+                '}';
     }
 }
+
+

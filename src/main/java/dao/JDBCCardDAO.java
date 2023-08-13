@@ -10,7 +10,10 @@ public class JDBCCardDAO implements CardDAO<CardDTO> {
     private final String dbURL;
 
     public JDBCCardDAO(String databasePath) {
-        this.dbURL = "jdbc:sqlite:" + databasePath;
+        if (!databasePath.startsWith("jdbc:sqlite:")) {
+            databasePath = "jdbc:sqlite:" + databasePath;
+        }
+        this.dbURL = databasePath;
     }
 
     @Override
@@ -45,8 +48,7 @@ public class JDBCCardDAO implements CardDAO<CardDTO> {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    CardDTO cardDTO = extractCardDTOFromResultSet(resultSet);
-                    cardsDTOs.add(cardDTO);
+                    cardsDTOs.add(extractCardDTOFromResultSet(resultSet));
                 }
             }
         } catch (SQLException e) {
