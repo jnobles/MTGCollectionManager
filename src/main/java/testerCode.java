@@ -1,9 +1,11 @@
 import dao.JDBCInventoryDAO;
 import dao.JDBCCardDAO;
+import gui.CardView;
 import model.CardCondition;
 import model.CardDTO;
 import model.PhysicalCardDTO;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,9 +33,30 @@ public class testerCode {
             inventory.writePhysicalCardToDatabase(physicalCardDTO);
         }
 
+        CardDTO testCard = cardDTOs.get(0);
+        System.out.println(testCard);
 
-        for (PhysicalCardDTO card : inventory.getAllCards()) {
-            System.out.println(card);
-        }
+        JFrame frame = new JFrame("Test");
+        CardView view = new CardView();
+        view.addRow("Rear", "eawre");
+        frame.setContentPane(view);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+
+        //JFrame frame = new JFrame("Data View");
+        //DatabaseView databaseView = new DatabaseView();
+        //frame.setContentPane(databaseView.getPanel());
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //frame.pack();
+        //frame.setVisible(true);
+
+        //JFrame frame = new JFrame("CardView");
+        //CardView cardView = new CardView();
+        //cardView.updateCard(testCard);
+        //frame.setContentPane(cardView.getPanel());
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //frame.pack();
+        //frame.setVisible(true);
     }
 }
