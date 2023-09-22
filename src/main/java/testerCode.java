@@ -1,3 +1,4 @@
+import controllers.CardViewController;
 import dao.JDBCInventoryDAO;
 import dao.JDBCCardDAO;
 import gui.CardView;
@@ -38,7 +39,8 @@ public class testerCode {
 
         JFrame frame = new JFrame("Test");
         CardView view = new CardView();
-        view.addRow("Rear", "eawre");
+        CardViewController controller = new CardViewController(view);
+        controller.updateViewInformation(testCard);
         frame.setContentPane(view);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();

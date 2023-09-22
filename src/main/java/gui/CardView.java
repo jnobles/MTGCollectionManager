@@ -5,13 +5,12 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class CardView extends JPanel {
-    DefaultTableModel tableModel;
+    JTable table;
 
     public CardView() {
         setLayout(new BorderLayout());
-        tableModel = new DefaultTableModel();
+        DefaultTableModel tableModel = new DefaultTableModel();
         JTable tableCardInfo = new JTable(tableModel);
-        DefaultTableModel tableModel = (DefaultTableModel) tableCardInfo.getModel();
         tableModel.addColumn("Header");
         tableModel.addColumn("Info");
         add(tableCardInfo, BorderLayout.CENTER);
@@ -22,7 +21,7 @@ public class CardView extends JPanel {
         add(textareaCardText, BorderLayout.SOUTH);
     }
 
-    public void addRow(String header, String data) {
-        tableModel.addRow(new Object[]{header, data});
+    public JTable getTable() {
+        return table;
     }
 }
