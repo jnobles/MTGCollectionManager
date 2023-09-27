@@ -19,7 +19,7 @@ public class CardView extends JPanel {
         tableCardInfo.getColumnModel().getColumn(0).setMaxWidth(100);
         tableCardInfo.getColumnModel().getColumn(0).setCellRenderer(new BoldCellRenderer());
 
-        textareaCardText = new JTextArea(20, 20);
+        textareaCardText = new JTextArea(10, 20);
         textareaCardText.setLineWrap(true);
         textareaCardText.setWrapStyleWord(true);
 

@@ -7,7 +7,7 @@ import java.awt.*;
 public class DatabaseView extends JPanel {
     private JTable tableDatabaseView;
     private JScrollPane scrollPaneDatabaseTable;
-    private String[] columnHeaders = new String[]{"Name", "Type", "Set", "Color"};
+    private String[] columnHeaders = new String[]{"Name", "Type", "Set", "Color", "Number"};
 
     public DatabaseView() {
         setLayout(new BorderLayout());
